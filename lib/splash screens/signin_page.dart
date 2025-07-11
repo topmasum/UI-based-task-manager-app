@@ -2,9 +2,11 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager/splash%20screens/signup_page.dart';
 import 'package:task_manager/widget/screen_background.dart';
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
+  static const String routeName = '/sign-in';
 
   @override
   State<SigninScreen> createState() => _SigninScreenState();
@@ -115,6 +117,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
   }
   void _onTapSignupButton(){
+    Navigator.pushNamed(context, SignupScreen.routeName);
 
   }
   @override
