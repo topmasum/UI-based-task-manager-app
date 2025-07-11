@@ -114,6 +114,7 @@ class _SigninScreenState extends State<SigninScreen> {
     }
   }
   void _onTapForgotButton(){
+    Navigator.pushNamed(context, '/forget_pass');
 
   }
   void _onTapSignupButton(){
