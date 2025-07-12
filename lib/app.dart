@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/forget_pass_email.dart';
 import 'package:task_manager/splash%20screens/forget_pass_pin.dart';
+import 'package:task_manager/splash%20screens/main_nva_holder.dart';
 import 'package:task_manager/splash%20screens/password_set.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
 import 'package:task_manager/splash%20screens/signup_page.dart';
@@ -65,6 +66,7 @@ class TaskManager extends StatelessWidget {
         forgetpass.routeName:(context) => forgetpass(),
         pinverification.routeName:(context) => pinverification(),
         passwordset.routeName:(context) => passwordset(),
+        MainNvaHolder.routeName:(context) => MainNvaHolder(),
 
       },
     );

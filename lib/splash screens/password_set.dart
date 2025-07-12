@@ -1,5 +1,4 @@
 
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
@@ -18,6 +17,8 @@ class _passwordsetState extends State<passwordset> {
   final TextEditingController _passwordTEController = TextEditingController();
   final TextEditingController _confirmPasswordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _obscureText = true;
+  bool _obscureText1 = true;
 
   @override
   Widget build(BuildContext context) {
@@ -42,27 +43,52 @@ class _passwordsetState extends State<passwordset> {
                   SizedBox(height: 24,),
                   TextFormField(
                       controller: _passwordTEController,
+                      obscureText: _obscureText,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText ? Icons.visibility_off : Icons.visibility,
+                            color: Colors.green,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText; // Toggle visibility
+                            });
+                          },
+                        ),
                       ),
                       validator: (String ? value){
                           if((value?.length ?? 0)<=6){
                             return 'Please enter your Password more then 6 character';
                           }
                           return null;
-                        }
+                        },
+
                   ),
                   SizedBox(height: 10,),
                   TextFormField(
                       controller: _confirmPasswordTEController,
+                      obscureText: _obscureText1,
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Confirm Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText1 ? Icons.visibility_off : Icons.visibility,
+                            color: Colors.green,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText1 = !_obscureText1; // Toggle visibility
+                            });
+                          },
+                        ),
                       ),
                       validator: (String ? value){
                         if((value ??'')!=(_passwordTEController.text)){
@@ -115,7 +141,7 @@ class _passwordsetState extends State<passwordset> {
 
   }
   void _onTapsubmitbutton(){
-    Navigator.pushNamed(context,SignupScreen.routeName);
+    Navigator.pushNamed(context,SigninScreen.routeName);
 
   }
   @override

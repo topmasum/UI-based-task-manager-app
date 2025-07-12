@@ -2,6 +2,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager/splash%20screens/main_nva_holder.dart';
 import 'package:task_manager/splash%20screens/signup_page.dart';
 import 'package:task_manager/widget/screen_background.dart';
 class SigninScreen extends StatefulWidget {
@@ -109,9 +110,8 @@ class _SigninScreenState extends State<SigninScreen> {
   }
   void _onTapSignInButton(){
     if(_formKey.currentState!.validate()){
-      print('Email: ${_emailController.text}');
-      print('Password: ${_passwordController.text}');
     }
+    Navigator.pushNamedAndRemoveUntil(context, MainNvaHolder.routeName, (predicate)=>false);
   }
   void _onTapForgotButton(){
     Navigator.pushNamed(context, '/forget_pass');
