@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/splash%20screens/progresstaskscreen.dart';
 
+import '../widget/appbar.dart';
+import 'canceled_task_screen.dart';
+import 'completedtask.dart';
 import 'new_tasklist_screen.dart';
 class MainNvaHolder extends StatefulWidget {
    MainNvaHolder({super.key});
@@ -11,12 +15,13 @@ class MainNvaHolder extends StatefulWidget {
 
 class _MainNvaHolderState extends State<MainNvaHolder> {
   List<Widget> _screens=[
-    NewTasklistScreen(),
+    NewTasklistScreen(),Progresstaskscreen(),Completedtask(),CanceledTaskScreen()
   ];
    int _selectedIndex=0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: TMappbar_widget(),
       body: _screens[_selectedIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
@@ -37,3 +42,5 @@ class _MainNvaHolderState extends State<MainNvaHolder> {
     );
   }
 }
+
+
