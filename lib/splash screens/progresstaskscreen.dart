@@ -20,7 +20,7 @@ class _ProgresstaskscreenState extends State<Progresstaskscreen> {
             Expanded(child: ListView.builder(
                 itemCount: 10,
                 itemBuilder: (context,index){
-                  return Taskcard();
+                  return Taskcard(status: TaskStatus.progress);
                 }))
           ],
         ),

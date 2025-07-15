@@ -20,7 +20,7 @@ class _CanceledTaskScreenState extends State<CanceledTaskScreen> {
             Expanded(child: ListView.builder(
                 itemCount: 10,
                 itemBuilder: (context,index){
-                  return Taskcard();
+                  return Taskcard(status: TaskStatus.canceled,);
                 }))
           ],
         ),
