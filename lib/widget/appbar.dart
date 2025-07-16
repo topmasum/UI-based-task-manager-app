@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
+import 'package:task_manager/splash%20screens/update_profile_screen.dart';
 
 class TMappbar_widget extends StatelessWidget implements PreferredSizeWidget {
   const TMappbar_widget({super.key});
@@ -8,36 +9,49 @@ class TMappbar_widget extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.green,
-      title: Row(
-        children: [
-          const CircleAvatar(),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text('Masum Billah',
-                    style: TextStyle(fontSize: 15, color: Colors.white)),
-                Text('masum@gmail.com',
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.white,
-                        fontWeight: FontWeight.normal)),
-              ],
+      title: GestureDetector(
+        onTap:() => _ontapProfile(context),
+        child: Row(
+          children: [
+            const CircleAvatar(),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text('Masum Billah',
+                      style: TextStyle(fontSize: 15, color: Colors.white)),
+                  Text('masum@gmail.com',
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                          fontWeight: FontWeight.normal)),
+                ],
+              ),
             ),
-          ),
-          IconButton(
-            onPressed: () => _ontapLogout(context),
-            icon: const Icon(Icons.logout),
-          )
-        ],
+            IconButton(
+              onPressed: () => _ontapLogout(context),
+              icon: const Icon(Icons.logout),
+            )
+          ],
+        ),
       ),
     );
+
   }
 
   void _ontapLogout(BuildContext context) {
     Navigator.pushNamedAndRemoveUntil(
         context, SigninScreen.routeName, (route) => false);
+  }
+  void _ontapProfile(BuildContext context){
+    if(ModalRoute.of(context)!.settings.name==update_profile_screen.routeName)
+      {
+        return;
+      }else{
+      Navigator.pushNamed(context, update_profile_screen.routeName );
+
+    }
   }
 
   @override

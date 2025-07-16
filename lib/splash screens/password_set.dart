@@ -2,7 +2,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
-import 'package:task_manager/splash%20screens/signup_page.dart';
 import 'package:task_manager/widget/screen_background.dart';
 class passwordset extends StatefulWidget {
   const passwordset({super.key});

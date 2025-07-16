@@ -3,17 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/forget_pass_email.dart';
 import 'package:task_manager/splash%20screens/forget_pass_pin.dart';
 import 'package:task_manager/splash%20screens/main_nva_holder.dart';
+import 'package:task_manager/splash%20screens/new_task_screen.dart';
 import 'package:task_manager/splash%20screens/password_set.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
 import 'package:task_manager/splash%20screens/signup_page.dart';
 import 'package:task_manager/splash%20screens/splash_screen.dart';
+import 'package:task_manager/splash%20screens/update_profile_screen.dart';
 
 class TaskManager extends StatelessWidget {
   const TaskManager({super.key});
+  static GlobalKey<NavigatorState>navigator=GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigator,
       theme: ThemeData(
         colorSchemeSeed: Colors.green,
         textTheme: TextTheme(
@@ -67,6 +71,8 @@ class TaskManager extends StatelessWidget {
         pinverification.routeName:(context) => pinverification(),
         passwordset.routeName:(context) => passwordset(),
         MainNvaHolder.routeName:(context) => MainNvaHolder(),
+        newtaskscreen.routeName:(context) => newtaskscreen(),
+        update_profile_screen.routeName:(context)=> update_profile_screen(),
 
       },
     );
