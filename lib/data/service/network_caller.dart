@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 
 import 'package:http/http.dart';
 
@@ -19,7 +20,9 @@ class Networkcaller {
   static const String _deferror = 'Something went wrong';
   static Future<NetworkResponse> getRequest({required String url}) async {
     Uri uri = Uri.parse(url);
+    _logrequest(url, null);
     Response response = await get(uri);
+    _logresponse(url, response);
     try {
       if (response.statusCode == 200) {
         final decodedjson = jsonDecode(response.body);
@@ -50,9 +53,13 @@ class Networkcaller {
     required Map<String, String> body,
   }) async {
     Uri uri = Uri.parse(url);
-    Response response = await post(uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body));
+    _logrequest(url, body);
+    Response response = await post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+    _logresponse(url, response);
     try {
       if (response.statusCode == 200) {
         final decodedjson = jsonDecode(response.body);
@@ -66,7 +73,7 @@ class Networkcaller {
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
-          message: decodedjson['error'] ?? _deferror,
+          message: decodedjson['data'] ?? _deferror,
         );
       }
     } catch (e) {
@@ -76,5 +83,24 @@ class Networkcaller {
         message: _deferror,
       );
     }
+  }
+
+  static void _logrequest(String url, Map<String, String>? body) {
+    debugPrint(
+      '====================================\n'
+      'url:$url'
+      'BODY:$body'
+      '================================================\n',
+    );
+  }
+
+  static void _logresponse(String url, Response response) {
+    debugPrint(
+      '====================================\n'
+      'url:$url'
+      'STATUS CODE:${response.statusCode}'
+      'BODY:${response.body}'
+      '================================================\n',
+    );
   }
 }
