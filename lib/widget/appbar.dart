@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
 import 'package:task_manager/splash%20screens/update_profile_screen.dart';
 
+import '../ui/controllers/auth_controller.dart';
+
 class TMappbar_widget extends StatelessWidget implements PreferredSizeWidget {
   const TMappbar_widget({super.key});
 
@@ -40,7 +42,8 @@ class TMappbar_widget extends StatelessWidget implements PreferredSizeWidget {
 
   }
 
-  void _ontapLogout(BuildContext context) {
+  Future<void> _ontapLogout(BuildContext context) async {
+    await authcontroller.removeUserData();
     Navigator.pushNamedAndRemoveUntil(
         context, SigninScreen.routeName, (route) => false);
   }

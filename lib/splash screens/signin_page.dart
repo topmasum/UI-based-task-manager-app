@@ -9,6 +9,8 @@ import 'package:task_manager/widget/screen_background.dart';
 import 'package:task_manager/widget/snackbar_message.dart';
 
 import '../data/Urls.dart';
+import '../data/models/user_model.dart';
+import '../ui/controllers/auth_controller.dart';
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
@@ -158,6 +160,10 @@ class _SigninScreenState extends State<SigninScreen> {
       body: reqbody,
     );
     if(response.isSuccess){
+      user userModel=user.fromjson(response.body!['data']);
+      String token=response.body!['token'];
+      await authcontroller.saveUserData(token, userModel);
+
       Navigator.pushNamedAndRemoveUntil(
         context,
         MainNvaHolder.routeName,
