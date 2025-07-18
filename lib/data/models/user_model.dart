@@ -4,6 +4,10 @@ class user{
   late String firstName;
   late String lastName;
   late String mobile;
+
+  String get fullnaem{
+    return '$firstName $lastName';
+  }
   user.fromjson(Map<String, dynamic> jsonData) {
     id = jsonData['_id'];
     email = jsonData['email'];

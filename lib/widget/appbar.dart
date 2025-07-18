@@ -20,10 +20,10 @@ class TMappbar_widget extends StatelessWidget implements PreferredSizeWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('Masum Billah',
+                children:  [
+                  Text(authcontroller.userModel!.fullnaem,
                       style: TextStyle(fontSize: 15, color: Colors.white)),
-                  Text('masum@gmail.com',
+                  Text(authcontroller.userModel!.email,
                       style: TextStyle(
                           fontSize: 15,
                           color: Colors.white,
