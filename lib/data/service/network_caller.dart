@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart';
+import 'package:task_manager/ui/controllers/auth_controller.dart';
 
 class NetworkResponse {
   final bool isSuccess;
@@ -20,7 +21,7 @@ class Networkcaller {
   static const String _deferror = 'Something went wrong';
   static Future<NetworkResponse> getRequest({required String url}) async {
     Uri uri = Uri.parse(url);
-    _logrequest(url, null);
+    _logrequest(url, null,null);
     Response response = await get(uri);
     _logresponse(url, response);
     try {
@@ -52,11 +53,15 @@ class Networkcaller {
     required String url,
     required Map<String, String> body,
   }) async {
+   final Map<String, String> headers = {
+     'Content-Type': 'application/json',
+     'token':authcontroller.accessToken??''
+   };
     Uri uri = Uri.parse(url);
-    _logrequest(url, body);
+    _logrequest(url, body,headers);
     Response response = await post(
       uri,
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
       body: jsonEncode(body),
     );
     _logresponse(url, response);
@@ -85,18 +90,19 @@ class Networkcaller {
     }
   }
 
-  static void _logrequest(String url, Map<String, String>? body) {
+  static void _logrequest(String url, Map<String, String>? body,Map<String, String>? headers) {
     debugPrint(
-      '====================================\n'
+      '================REQUEST====================\n'
       'url:$url'
       'BODY:$body'
+      'HEADERS:$headers'
       '================================================\n',
     );
   }
 
   static void _logresponse(String url, Response response) {
     debugPrint(
-      '====================================\n'
+      '===============RESPONSE=====================\n'
       'url:$url'
       'STATUS CODE:${response.statusCode}'
       'BODY:${response.body}'

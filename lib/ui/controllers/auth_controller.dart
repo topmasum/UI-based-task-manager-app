@@ -36,5 +36,7 @@ class authcontroller {
   static Future<void> removeUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+    userModel = null;
+    accessToken = null;
   }
 }
