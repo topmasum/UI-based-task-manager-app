@@ -6,7 +6,8 @@ class user{
   late String mobile;
 
   String get fullnaem{
-    return '$firstName $lastName';
+    return '$firstName '
+        '$lastName';
   }
   user.fromjson(Map<String, dynamic> jsonData) {
     id = jsonData['_id'];

@@ -20,7 +20,7 @@ class _CompletedtaskState extends State<Completedtask> {
             Expanded(child: ListView.builder(
                 itemCount: 10,
                 itemBuilder: (context,index){
-                  return Taskcard(status: TaskStatus.completed,);
+                 // return Taskcard(status: TaskStatus.completed,);
                 }))
           ],
         ),
