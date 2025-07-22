@@ -17,7 +17,10 @@ class _CanceledTaskScreenState extends State<CanceledTaskScreen> {
   List<TaskModel>_newcanceledList = [];
   void initState() {
     super.initState();
-    _getNewCanceled();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _getNewCanceled();
+    });
+
   }
   @override
   Widget build(BuildContext context) {

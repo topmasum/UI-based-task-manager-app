@@ -17,7 +17,10 @@ class _CompletedtaskState extends State<Completedtask> {
   List<TaskModel>_newcompleteList = [];
   void initState() {
     super.initState();
-    _getNewCompleted();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _getNewCompleted();
+    });
+
   }
   @override
   Widget build(BuildContext context) {

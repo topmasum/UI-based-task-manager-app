@@ -7,5 +7,6 @@ class Url {
   static const String progressListUrl = '$baseurl/listTaskByStatus/Progress';
   static const String completedListUrl = '$baseurl/listTaskByStatus/Completed';
   static const String canceledListUrl = '$baseurl/listTaskByStatus/Canceled';
+  static const String taskstatuscountUrl = '$baseurl/taskStatusCount';
 
 }
