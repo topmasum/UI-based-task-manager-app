@@ -36,7 +36,7 @@ class _CompletedtaskState extends State<Completedtask> {
               child: ListView.builder(
                   itemCount: _newcompleteList.length,
                   itemBuilder: (context,index){
-                    return Taskcard(status: TaskStatus.completed, taskModel: _newcompleteList[index],);
+                    return TaskCard(taskType: TaskType.completed, taskModel: _newcompleteList[index], onStatusUpdate: _getNewCompleted,);
                   }),
             ))
           ],

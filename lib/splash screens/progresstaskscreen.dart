@@ -37,7 +37,7 @@ class _ProgresstaskscreenState extends State<Progresstaskscreen> {
               child: ListView.builder(
                   itemCount: _newprogressList.length,
                   itemBuilder: (context,index){
-                    return Taskcard(status: TaskStatus.progress, taskModel: _newprogressList[index],);
+                    return TaskCard(taskType: TaskType.progress, taskModel: _newprogressList[index], onStatusUpdate:_getNewProgress,);
                   }),
             ))
           ],
