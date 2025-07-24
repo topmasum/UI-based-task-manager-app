@@ -68,7 +68,7 @@ class _NewTasklistScreenState extends State<NewTasklistScreen> {
                   itemBuilder: (context,index){
                     return TaskCard(taskType: TaskType.tNew, taskModel: _newtaskList[index],
                       onStatusUpdate:
-                      _getNewTask,
+                      _refreshAllData,
                     );
                   }),
             ))
@@ -129,6 +129,10 @@ Future<void>_getNewTask()async {
   void _ontapaddnewtask(){
     Navigator.pushNamed(context, newtaskscreen.routeName);
 
+  }
+  Future<void> _refreshAllData() async {
+    await _getNewTask();
+    await _getNewTaskCountList();
   }
 }
 
