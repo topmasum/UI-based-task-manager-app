@@ -1,8 +1,14 @@
-import 'package:email_validator/email_validator.dart';
+
+import 'dart:convert';
+import 'dart:typed_data'; // For Uint8List
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:task_manager/ui/controllers/auth_controller.dart';
 import 'package:task_manager/widget/screen_background.dart';
+import 'package:task_manager/widget/snackbar_message.dart';
 
+import '../data/Urls.dart';
+import '../data/service/network_caller.dart';
 import '../widget/appbar.dart';
 class update_profile_screen extends StatefulWidget {
   const update_profile_screen({super.key});
@@ -21,6 +27,17 @@ class _update_profile_screenState extends State<update_profile_screen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final ImagePicker _imagePicker=ImagePicker();
   XFile? _selectedImage;
+  bool updateImageInProgress=false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _emailController.text=authcontroller.userModel?.email??'';
+    _nameController.text=authcontroller.userModel?.firstName??'';
+    _lastnameController.text=authcontroller.userModel?.lastName??'';
+    _mobileController.text=authcontroller.userModel?.mobile??'';
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,19 +79,14 @@ class _update_profile_screenState extends State<update_profile_screen> {
                   SizedBox(height: 10,),
                   TextFormField(
                       controller: _emailController,
+                      enabled: false,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Email',
                       ),
-                      validator: (String ? value){
-                        String email=value ?? '';
-                        if(EmailValidator.validate(email)==false){
-                          return 'Please enter your email';
-                        }
-                        return null;
-                      }
+
                   ),
                   SizedBox(height: 10),
                   TextFormField(
@@ -136,16 +148,21 @@ class _update_profile_screenState extends State<update_profile_screen> {
                         hintText: 'Password',
                       ),
                       validator: (String ? value){
-                        if((value?.length ?? 0)<=6){
+                        int len=value?.length ?? 0;
+                        if(len >0 && len<=6){
                           return 'Please enter your Password more then 6 character';
                         }
                         return null;
                       }
                   ),
                   SizedBox(height: 16,),
-                  ElevatedButton(
-                      onPressed: _onTapSignupButton,
-                      child: Icon(Icons.arrow_circle_right_outlined)),
+                  Visibility(
+                    visible: updateImageInProgress==false,
+                    replacement: Center(child: CircularProgressIndicator()),
+                    child: ElevatedButton(
+                        onPressed: _onTapSignupButton,
+                        child: Icon(Icons.arrow_circle_right_outlined)),
+                  ),
                   SizedBox(height: 20,),
 
                 ],
@@ -190,7 +207,49 @@ class _update_profile_screenState extends State<update_profile_screen> {
     }
   }
   void _onTapSignupButton(){
+    if(_formKey.currentState!.validate()){
+      _updateImage();
+    }
   }
+  Future<void>_updateImage()async{
+    updateImageInProgress=true;
+    if(mounted){
+      setState(() {});
+    }
+    Map<String,String> requestbody={
+
+        "email":_emailController.text,
+        "firstName":_nameController.text.trim(),
+        "lastName":_lastnameController.text.trim(),
+        "mobile":_mobileController.text,
+    };
+    if(_passwordController.text.isNotEmpty)
+    {
+      requestbody['password']=_passwordController.text;
+    }
+    if(_selectedImage != null){
+      Uint8List imageBytes = await _selectedImage!.readAsBytes();
+      requestbody['photo']=base64Encode(imageBytes);
+    }
+    NetworkResponse response = await Networkcaller.postRequest(url:Url.updateProfileUrl, body: requestbody);
+    if(response.isSuccess){
+      _passwordController.clear();
+      updateImageInProgress=false;
+      if(mounted){
+        setState(() {});
+      }
+    }else{
+      updateImageInProgress=false;
+      if(mounted){
+        snackbar_message(context, 'Successfully Updated');
+      }else{
+        snackbar_message(context, response.message!);
+
+      }
+    }
+
+  }
+
   @override
   void dispose() {
     _emailController.dispose();

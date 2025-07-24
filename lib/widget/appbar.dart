@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
 import 'package:task_manager/splash%20screens/update_profile_screen.dart';
@@ -15,8 +17,14 @@ class TMappbar_widget extends StatelessWidget implements PreferredSizeWidget {
         onTap:() => _ontapProfile(context),
         child: Row(
           children: [
-            const CircleAvatar(),
-            const SizedBox(width: 16),
+             CircleAvatar(
+              backgroundImage:authcontroller.userModel?.photo==null ? null:
+              MemoryImage(
+                  base64Decode(authcontroller.userModel!.photo!
+                  )),
+
+            ),
+             SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
