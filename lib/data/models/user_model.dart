@@ -10,6 +10,16 @@ class user{
     return '$firstName '
         '$lastName';
   }
+
+  user({
+    required this.id,
+    required this.email,
+    required this.firstName,
+    required this.lastName,
+    required this.mobile,
+    this.photo
+});
+
   user.fromjson(Map<String, dynamic> jsonData) {
     id = jsonData['_id'];
     email = jsonData['email'];

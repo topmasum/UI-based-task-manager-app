@@ -3,6 +3,9 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/widget/screen_background.dart';
+
+import '../data/Urls.dart';
+import '../data/service/network_caller.dart';
 class forgetpass extends StatefulWidget {
   const forgetpass({super.key});
   static const String routeName = '/forget_pass';
@@ -15,6 +18,7 @@ class _forgetpassState extends State<forgetpass> {
   final TextEditingController _emailController = TextEditingController();
   //final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _emailInprogress=false;
 
   @override
   Widget build(BuildContext context) {
@@ -97,14 +101,33 @@ class _forgetpassState extends State<forgetpass> {
 
   }
   void _onTapsubmitbutton(){
+    if(_formKey.currentState!.validate()){
+      _recoveryemail();
+    }
     Navigator.pushNamed(context, '/pin_verification');
 
+  }
+  Future<void> _recoveryemail()async{
+    _emailInprogress=true;
+    String email=_emailController.text.trim();
+    if(mounted){
+      setState(() {});
+    }
+
+    Map<String,String> reqbody={
+      'email':_emailController.text.trim(),
+    };
+    NetworkResponse response=await Networkcaller.postRequest(
+      url: Url.recoveryEmailUrl(email),
+      body: reqbody,
+    );
   }
   @override
   void dispose() {
     _emailController.dispose();
     super.dispose();
   }
+
 
 
 }

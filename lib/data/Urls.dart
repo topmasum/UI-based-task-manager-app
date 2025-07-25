@@ -10,5 +10,6 @@ class Url {
   static const String taskstatuscountUrl = '$baseurl/taskStatusCount';
   static  String updateTaskStatusUrl(String id,String status)=>'$baseurl/updateTaskStatus/$id/$status';
   static String updateProfileUrl='$baseurl/ProfileUpdate';
+  static String recoveryEmailUrl(String email)=>'$baseurl/RecoverVerifyEmail/$email';
 
 }
