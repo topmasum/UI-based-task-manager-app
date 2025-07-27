@@ -25,6 +25,7 @@ class TaskCard extends StatefulWidget {
 
 class _TaskCardState extends State<TaskCard> {
   bool _updateTaskStatusInProgress = false;
+  bool _deleteTaskInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,9 @@ class _TaskCardState extends State<TaskCard> {
                   ),
                 ),
                 Spacer(),
-                IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+                IconButton(onPressed: () {
+                  _showDeleteConfirmationDialog();
+                }, icon: Icon(Icons.delete)),
                 Visibility(
                   visible: _updateTaskStatusInProgress == false,
                   replacement: CircularProgressIndicator(),
@@ -173,6 +176,57 @@ class _TaskCardState extends State<TaskCard> {
   //   }
   //
   // }
+  Future<void> _deleteTask() async {
+    Navigator.pop(context);
+    _deleteTaskInProgress = true;
+    if (mounted) {
+      setState(() {});
+    }
+    NetworkResponse response = await Networkcaller.getRequest(
+      url: Url.deleteTask(widget.taskModel.id),
+    );
+    _deleteTaskInProgress = false;
+    if (mounted) {
+      setState(() {});
+    }
+    if (response.isSuccess) {
+      widget.onStatusUpdate();
+    } else {
+      if (mounted) {
+        snackbar_message(context, response.message!);
+      }
+    }
+  }
+  void _showDeleteConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text('Delete Task'),
+          content: Text('Are you sure you want to delete this task?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx); // Dismiss dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: _deleteTask,
+              child: _deleteTaskInProgress
+                  ? SizedBox(
+                height: 16,
+                width: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+                  : Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   Future<void> _updateTaskStatus(String status) async {
     Navigator.pop(context);

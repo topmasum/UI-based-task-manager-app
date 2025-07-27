@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/data/service/network_caller.dart';
 import 'package:task_manager/splash%20screens/main_nva_holder.dart';
 import 'package:task_manager/splash%20screens/signup_page.dart';
@@ -164,11 +165,12 @@ class _SigninScreenState extends State<SigninScreen> {
       String token=response.body!['token'];
       await authcontroller.saveUserData(token, userModel);
 
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        MainNvaHolder.routeName,
-            (predicate) => false,
-      );
+      // Navigator.pushNamedAndRemoveUntil(
+      //   context,
+      //   MainNvaHolder.routeName,
+      //       (predicate) => false,
+      // );
+      Get.offAllNamed(MainNvaHolder.routeName);
     }else{
       _signinInprogress = false;
       setState(() {});
