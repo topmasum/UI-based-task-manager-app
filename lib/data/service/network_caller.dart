@@ -68,11 +68,13 @@ class Networkcaller {
     required String url,
     required Map<String, String> body,
     bool isFormlogin = false,
+    bool useToken = true, // <-- NEW PARAMETER
   }) async {
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'token': authcontroller.accessToken ?? '',
+      if (useToken) 'token': authcontroller.accessToken ?? '', // Add token conditionally
     };
+
     Uri uri = Uri.parse(url);
     _logrequest(url, body, headers);
     Response response = await post(
@@ -81,6 +83,7 @@ class Networkcaller {
       body: jsonEncode(body),
     );
     _logresponse(url, response);
+
     try {
       if (response.statusCode == 200) {
         final decodedjson = jsonDecode(response.body);
@@ -103,7 +106,7 @@ class Networkcaller {
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
-          message: decodedjson['data'] ?? _deferror,
+          message: decodedjson['data'] ?? decodedjson['error'] ?? _deferror, // more flexible
         );
       }
     } catch (e) {
@@ -114,6 +117,7 @@ class Networkcaller {
       );
     }
   }
+
 
   static void _logrequest(
     String url,

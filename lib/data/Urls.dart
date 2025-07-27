@@ -11,5 +11,10 @@ class Url {
   static  String updateTaskStatusUrl(String id,String status)=>'$baseurl/updateTaskStatus/$id/$status';
   static String updateProfileUrl='$baseurl/ProfileUpdate';
   static String recoveryEmailUrl(String email)=>'$baseurl/RecoverVerifyEmail/$email';
+  static String verifyPinUrl(String email, String pin) =>
+      '$baseurl/RecoverVerifyOtp/$email/$pin';
+  static const String resetPasswordUrl = '$baseurl/RecoverResetPassword';
+  static  String deleteTask(String id)=>'$baseurl/deleteTask/$id';
+
 
 }

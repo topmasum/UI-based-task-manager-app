@@ -3,6 +3,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
 import 'package:task_manager/widget/screen_background.dart';
+
+import '../data/Urls.dart';
+import '../data/service/network_caller.dart';
 class passwordset extends StatefulWidget {
   const passwordset({super.key});
   static const String routeName = '/password_set';
@@ -139,10 +142,49 @@ class _passwordsetState extends State<passwordset> {
     Navigator.pushNamed(context, SigninScreen.routeName);
 
   }
-  void _onTapsubmitbutton(){
-    Navigator.pushNamed(context,SigninScreen.routeName);
+  void _onTapsubmitbutton() async {
+    if (_formKey.currentState?.validate() != true) {
+      return;
+    }
 
+    final args = ModalRoute.of(context)?.settings.arguments;
+    String email = '';
+    String otp = '';
+
+    if (args is Map<String, dynamic>) {
+      email = args['email'] ?? '';
+      otp = args['pin'] ?? '';
+    }
+
+    if (email.isEmpty || otp.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Missing email or OTP')),
+      );
+      return;
+    }
+
+    final response = await Networkcaller.postRequest(
+      url: Url.resetPasswordUrl,
+      body: {
+        'email': email,
+        'OTP': otp,
+        'password': _passwordTEController.text.trim(),
+      },
+      useToken: false,
+    );
+
+    if (response.isSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Password reset successful. Please log in.')),
+      );
+      Navigator.pushNamedAndRemoveUntil(context, SigninScreen.routeName, (route) => false);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response.message ?? 'Password reset failed')),
+      );
+    }
   }
+
   @override
   void dispose() {
     _confirmPasswordTEController.dispose();

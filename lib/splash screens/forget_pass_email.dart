@@ -100,28 +100,39 @@ class _forgetpassState extends State<forgetpass> {
  Navigator.pop(context);
 
   }
-  void _onTapsubmitbutton(){
+  Future<void> _onTapsubmitbutton() async {
     if(_formKey.currentState!.validate()){
-      _recoveryemail();
+      await _recoveryemail();
     }
-    Navigator.pushNamed(context, '/pin_verification');
-
   }
-  Future<void> _recoveryemail()async{
-    _emailInprogress=true;
-    String email=_emailController.text.trim();
-    if(mounted){
-      setState(() {});
-    }
+  Future<void> _recoveryemail() async {
+    _emailInprogress = true;
+    if (mounted) setState(() {});
 
-    Map<String,String> reqbody={
-      'email':_emailController.text.trim(),
-    };
-    NetworkResponse response=await Networkcaller.postRequest(
+    String email = _emailController.text.trim();
+
+    // Correct usage: GET request, email in the URL path
+    NetworkResponse response = await Networkcaller.getRequest(
       url: Url.recoveryEmailUrl(email),
-      body: reqbody,
     );
+
+    _emailInprogress = false;
+    if (mounted) setState(() {});
+
+    if (response.isSuccess) {
+      Navigator.pushNamed(
+        context,
+        '/pin_verification',
+        arguments: {'email': email},
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response.message ?? 'Something went wrong')),
+      );
+    }
   }
+
+
   @override
   void dispose() {
     _emailController.dispose();

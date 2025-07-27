@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
 import 'package:task_manager/widget/screen_background.dart';
+
+import '../data/Urls.dart';
+import '../data/service/network_caller.dart';
 class pinverification extends StatefulWidget {
   const pinverification({super.key});
   static const String routeName = '/pin_verification';
@@ -96,9 +99,62 @@ class _pinverificationState extends State<pinverification> {
     Navigator.pushNamedAndRemoveUntil(context, SigninScreen.routeName, (predicate)=>false);
 
   }
-  void _onTapsubmitbutton(){
-  Navigator.pushNamed(context, '/password_set');
+  void _onTapsubmitbutton() {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    String email = '';
+    if (args is Map<String, dynamic>) {
+      email = args['email'] ?? '';
+    } else if (args is String) {
+      email = args;
+    }
+
+    String pin = _otpTEcontroller.text.trim();
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Email not found')),
+      );
+      return;
+    }
+
+    _pinVerification(email, pin);
   }
+
+  Future<void> _pinVerification(String email, String pin) async {
+    try {
+      final url = Url.verifyPinUrl(email, pin);
+      final response = await Networkcaller.getRequest(url: url);
+
+      if (response.isSuccess) {
+        // PIN verified successfully
+        // You can navigate to the next screen, e.g., reset password page
+        // For example:
+        Navigator.pushNamed(
+          context,
+          '/password_set',
+          arguments: {
+            'email': email,
+            'pin': pin,
+          },
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('PIN verified successfully!')),
+        );
+      } else {
+        // PIN verification failed, show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response.message ?? 'Verification failed')),
+        );
+      }
+    } catch (e) {
+      // Handle network or parsing errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred. Please try again.')),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _otpTEcontroller.dispose();
