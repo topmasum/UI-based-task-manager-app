@@ -31,7 +31,6 @@ class _update_profile_screenState extends State<update_profile_screen> {
   bool updateImageInProgress = false;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _emailController.text = authcontroller.userModel?.email ?? '';
     _nameController.text = authcontroller.userModel?.firstName ?? '';
@@ -247,12 +246,15 @@ class _update_profile_screenState extends State<update_profile_screen> {
         lastName: _lastnameController.text.trim(),
         mobile: _mobileController.text.trim(),
         photo: imageBytes == null ? authcontroller.userModel!.photo : base64Encode(imageBytes),
+
       );
       await authcontroller.UpdateUserData(userModels,);
       _passwordController.clear();
       updateImageInProgress = false;
       if (mounted) {
         setState(() {});
+        snackbar_message(context, 'Profile updated successfully!');
+        Navigator.pop(context);
       }
     } else {
       updateImageInProgress = false;

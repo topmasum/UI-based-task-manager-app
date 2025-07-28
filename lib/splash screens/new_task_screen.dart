@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:task_manager/data/service/network_caller.dart';
 import 'package:task_manager/widget/appbar.dart';
 import 'package:task_manager/widget/screen_background.dart';
@@ -93,7 +92,7 @@ class _newtaskscreenState extends State<newtaskscreen> {
     if (_formKey.currentState!.validate()) {
       _addNewTask();
     }
-    //Navigator.pop(context);
+    //
   }
   Future<void> _addNewTask() async {
     Map<String, String> _reqbody() {
@@ -121,7 +120,8 @@ class _newtaskscreenState extends State<newtaskscreen> {
       _descriptionController.clear();
       snackbar_message(context, 'Task added successfully');
       _addNewTaskInprogress=false;
-      Get.back();
+      Navigator.pop(context, true);
+
 
     } else {
       snackbar_message(context, response.message!);

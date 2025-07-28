@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:task_manager/data/service/network_caller.dart';
 import 'package:task_manager/widget/snackbar_message.dart';
 
@@ -128,10 +126,15 @@ Future<void>_getNewTask()async {
     setState(() {});
   }
 }
-  void _ontapaddnewtask(){
-    // Navigator.pushNamed(context, newtaskscreen.routeName);
-    Get.toNamed(newtaskscreen.routeName);
+  Future<void> _ontapaddnewtask() async {
+    final result = await Navigator.pushNamed( // <-- Capture the result here
+      context,
+      newtaskscreen.routeName,
+    );
 
+    if (result == true) { // Now you can safely use 'result'
+      await _refreshAllData();
+    }
   }
   Future<void> _refreshAllData() async {
     await _getNewTask();

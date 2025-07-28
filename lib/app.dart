@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:task_manager/splash%20screens/forget_pass_email.dart';
 import 'package:task_manager/splash%20screens/forget_pass_pin.dart';
 import 'package:task_manager/splash%20screens/main_nva_holder.dart';
@@ -17,7 +16,8 @@ class TaskManager extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
       navigatorKey: navigator,
       theme: ThemeData(
         colorSchemeSeed: Colors.green,
