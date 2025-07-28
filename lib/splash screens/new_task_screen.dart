@@ -10,6 +10,7 @@ import '../widget/snackbar_message.dart';
 class newtaskscreen extends StatefulWidget {
   const newtaskscreen({super.key});
   static const routeName = '/newtaskscreen';
+
   @override
   State<newtaskscreen> createState() => _newtaskscreenState();
 }
@@ -25,62 +26,64 @@ class _newtaskscreenState extends State<newtaskscreen> {
     return Scaffold(
       appBar: TMappbar_widget(),
       body: screen_background(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 45),
-                Text('New Task', style: Theme
-                    .of(context)
-                    .textTheme
-                    .titleLarge),
-                SizedBox(height: 16),
-                TextFormField(
-                  controller: _titleController,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    hintText: 'Title',
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 45),
+                  Text(
+                      'New Task',
+                      style: Theme.of(context).textTheme.titleLarge
                   ),
-                  validator: (String? value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter your title';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  controller: _descriptionController,
-                  textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    hintText: 'Description',
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _titleController,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Title',
+                    ),
+                    validator: (String? value) {
+                      if (value?.isEmpty ?? true) {
+                        return 'Please enter your title';
+                      }
+                      return null;
+                    },
                   ),
-                  maxLines: 5,
-                  validator: (String? value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter your description';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
-                Visibility(
-                  visible: _addNewTaskInprogress == false,
-                  replacement: progress_indicator(),
-                  child: ElevatedButton(
-                    onPressed: _ontapsubmitbutton,
-                    child: Icon(Icons.arrow_circle_right_outlined),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _descriptionController,
+                    textInputAction: TextInputAction.done,
+                    decoration: const InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Description',
+                    ),
+                    maxLines: 5,
+                    validator: (String? value) {
+                      if (value?.isEmpty ?? true) {
+                        return 'Please enter your description';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  Visibility(
+                    visible: !_addNewTaskInprogress,
+                    replacement: const progress_indicator(),
+                    child: ElevatedButton(
+                      onPressed: _ontapsubmitbutton,
+                      child: const Icon(Icons.arrow_circle_right_outlined),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -92,46 +95,48 @@ class _newtaskscreenState extends State<newtaskscreen> {
     if (_formKey.currentState!.validate()) {
       _addNewTask();
     }
-    //
   }
+
   Future<void> _addNewTask() async {
-    Map<String, String> _reqbody() {
-      return {
-        'title': _titleController.text.trim(),
-        'description': _descriptionController.text.trim(),
-        'status': 'New',
-      };
+    setState(() => _addNewTaskInprogress = true);
+
+    try {
+      final response = await Networkcaller.postRequest(
+        url: Url.taskUrl,
+        body: {
+          'title': _titleController.text.trim(),
+          'description': _descriptionController.text.trim(),
+          'status': 'New',
+        },
+      );
+
+      if (response.isSuccess) {
+        _titleController.clear();
+        _descriptionController.clear();
+        if (mounted) {
+          snackbar_message(context, 'Task added successfully');
+          Navigator.pop(context, true); // Return success
+        }
+      } else {
+        if (mounted) {
+          snackbar_message(context, response.message ?? 'Failed to add task');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        snackbar_message(context, 'An error occurred: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _addNewTaskInprogress = false);
+      }
     }
-    setState(() {
-      _addNewTaskInprogress = true;
-    });
+  }
 
-    NetworkResponse response = await Networkcaller.postRequest(
-      url: Url.taskUrl,
-      body: _reqbody(),
-    );
-
-    setState(() {
-      _addNewTaskInprogress = false;
-    });
-
-    if (response.isSuccess) {
-      _titleController.clear();
-      _descriptionController.clear();
-      snackbar_message(context, 'Task added successfully');
-      _addNewTaskInprogress=false;
-      Navigator.pop(context, true);
-
-
-    } else {
-      snackbar_message(context, response.message!);
-    }
-
-    @override
-    void dispose() {
-      _titleController.dispose();
-      _descriptionController.dispose();
-      super.dispose();
-    }
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 }
