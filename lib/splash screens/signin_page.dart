@@ -20,7 +20,7 @@ class _SigninScreenState extends State<SigninScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final Signin_controller _signinController = Signin_controller();
+  final Signin_controller _signinController = Get.find<Signin_controller>();
 
 
   @override
@@ -76,8 +76,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     },
                   ),
                   SizedBox(height: 16),
-                  GetBuilder(
-                    init: _signinController,
+                  GetBuilder<Signin_controller>(
                     builder: (controller) {
                       return Visibility(
                         visible:controller.Inprogress == false,

@@ -10,6 +10,8 @@ import 'package:task_manager/splash%20screens/signup_page.dart';
 import 'package:task_manager/splash%20screens/splash_screen.dart';
 import 'package:task_manager/splash%20screens/update_profile_screen.dart';
 
+import 'controller_binder.dart';
+
 class TaskManager extends StatelessWidget {
   const TaskManager({super.key});
   static GlobalKey<NavigatorState>navigator=GlobalKey<NavigatorState>();
@@ -76,6 +78,7 @@ class TaskManager extends StatelessWidget {
         update_profile_screen.routeName:(context)=> update_profile_screen(),
 
       },
+      initialBinding: ControllerBinder(),
     );
   }
   
