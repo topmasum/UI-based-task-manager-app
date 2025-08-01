@@ -1,4 +1,4 @@
-
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/forget_pass_email.dart';
 import 'package:task_manager/splash%20screens/forget_pass_pin.dart';
@@ -16,7 +16,7 @@ class TaskManager extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: navigator,
       theme: ThemeData(
