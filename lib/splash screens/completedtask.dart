@@ -30,7 +30,7 @@ class _CompletedtaskState extends State<Completedtask> {
               child: GetBuilder<CompletedTaskController>(
                 builder: (controller) {
                   return Visibility(
-                    visible: controller?.Inprogress == false,
+                    visible: controller.Inprogress == false,
                     replacement: Center(child: CircularProgressIndicator()),
                     child: ListView.builder(
                       itemCount: controller.newcompleteList.length,
