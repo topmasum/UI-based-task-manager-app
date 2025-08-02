@@ -77,6 +77,7 @@ class TaskManager extends StatelessWidget {
         newtaskscreen.routeName:(context) => newtaskscreen(),
         update_profile_screen.routeName:(context)=> update_profile_screen(),
 
+
       },
       initialBinding: ControllerBinder(),
     );
