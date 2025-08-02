@@ -86,13 +86,10 @@ class _NewTasklistScreenState extends State<NewTasklistScreen> {
 
   Future<void> _ontapaddnewtask() async {
     final result = await Navigator.pushNamed(
-      // <-- Capture the result here
       context,
       newtaskscreen.routeName,
     );
-
     if (result == true) {
-      // Now you can safely use 'result'
       await _refreshAllData();
     }
   }

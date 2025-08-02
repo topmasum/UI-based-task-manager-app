@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/main_nva_holder.dart';
+import 'package:task_manager/splash%20screens/signup_page.dart';
 import 'package:task_manager/widget/progress_indicator.dart';
 import 'package:task_manager/widget/screen_background.dart';
 import 'package:get/get.dart';
@@ -147,6 +148,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
   void _onTapSignupButton() {
    // Navigator.pushNamed(context, SignupScreen.routeName);
+    Get.toNamed(SignupScreen.routeName);
 
   }
 

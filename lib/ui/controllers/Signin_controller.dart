@@ -29,16 +29,8 @@ class Signin_controller extends GetxController{
       isSuccessful=true;
       _errormessage=null;
 
-      // Navigator.pushNamedAndRemoveUntil(
-      //   context,
-      //   MainNvaHolder.routeName,
-      //       (predicate) => false,
-      // );
-      //Get.offAllNamed(MainNvaHolder.routeName);
-
     }else{
       _errormessage=response.message!;
-
     }
     _Inprogress = false;
     update();
