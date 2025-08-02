@@ -3,9 +3,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
 import 'package:task_manager/widget/screen_background.dart';
-
-import '../data/Urls.dart';
-import '../data/service/network_caller.dart';
+import 'package:get/get.dart';
+import '../ui/controllers/reset_pass_controller.dart';
 class passwordset extends StatefulWidget {
   const passwordset({super.key});
   static const String routeName = '/password_set';
@@ -19,6 +18,7 @@ class _passwordsetState extends State<passwordset> {
   final TextEditingController _passwordTEController = TextEditingController();
   final TextEditingController _confirmPasswordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final ResetPasswordController _controller = Get.put(ResetPasswordController());
   bool _obscureText = true;
   bool _obscureText1 = true;
 
@@ -143,9 +143,7 @@ class _passwordsetState extends State<passwordset> {
 
   }
   void _onTapsubmitbutton() async {
-    if (_formKey.currentState?.validate() != true) {
-      return;
-    }
+    if (_formKey.currentState?.validate() != true) return;
 
     final args = ModalRoute.of(context)?.settings.arguments;
     String email = '';
@@ -163,25 +161,30 @@ class _passwordsetState extends State<passwordset> {
       return;
     }
 
-    final response = await Networkcaller.postRequest(
-      url: Url.resetPasswordUrl,
-      body: {
-        'email': email,
-        'OTP': otp,
-        'password': _passwordTEController.text.trim(),
-      },
-      useToken: false,
+    final success = await _controller.resetPassword(
+      email: email,
+      otp: otp,
+      password: _passwordTEController.text.trim(),
     );
 
-    if (response.isSuccess) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password reset successful. Please log in.')),
-      );
-      Navigator.pushNamedAndRemoveUntil(context, SigninScreen.routeName, (route) => false);
+    if (success) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Password reset successful. Please log in.')),
+        );
+        // Navigator.pushNamedAndRemoveUntil(
+        //   context,
+        //   SigninScreen.routeName,
+        //       (route) => false,
+        // );
+        Get.offAllNamed(SigninScreen.routeName);
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.message ?? 'Password reset failed')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_controller.errorMessage ?? 'Password reset failed')),
+        );
+      }
     }
   }
 
