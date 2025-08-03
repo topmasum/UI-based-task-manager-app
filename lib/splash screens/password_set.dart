@@ -3,17 +3,15 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
 import 'package:task_manager/widget/screen_background.dart';
-
+import 'package:get/get.dart';
 import '../data/Urls.dart';
 import '../data/service/network_caller.dart';
 class passwordset extends StatefulWidget {
   const passwordset({super.key});
   static const String routeName = '/password_set';
-
   @override
   State<passwordset> createState() => _passwordsetState();
 }
-
 class _passwordsetState extends State<passwordset> {
   //final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
@@ -177,20 +175,18 @@ class _passwordsetState extends State<passwordset> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Password reset successful. Please log in.')),
       );
-      Navigator.pushNamedAndRemoveUntil(context, SigninScreen.routeName, (route) => false);
+     // Navigator.pushNamedAndRemoveUntil(context, SigninScreen.routeName, (route) => false);
+      Get.offAllNamed(SigninScreen.routeName);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response.message ?? 'Password reset failed')),
       );
     }
   }
-
   @override
   void dispose() {
     _confirmPasswordTEController.dispose();
     _passwordTEController.dispose();
     super.dispose();
   }
-
-
 }
