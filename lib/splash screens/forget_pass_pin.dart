@@ -1,9 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:task_manager/splash%20screens/password_set.dart';
 import 'package:task_manager/splash%20screens/signin_page.dart';
 import 'package:task_manager/widget/screen_background.dart';
-import 'package:get/get.dart';
+
 import '../ui/controllers/pin_verification_controller.dart';
 
 class pinverification extends StatefulWidget {
@@ -16,11 +18,22 @@ class pinverification extends StatefulWidget {
 
 class _pinverificationState extends State<pinverification> {
   final TextEditingController _otpTEcontroller = TextEditingController();
-  //final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final PinVerificationController _controller = Get.put(
-    PinVerificationController(),
-  );
+  late String email;
+  final PinVerificationController _controller = Get.put(PinVerificationController());
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map<String, dynamic>) {
+      email = args['email'] ?? '';
+    } else if (args is String) {
+      email = args;
+    } else {
+      email = '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,19 +48,14 @@ class _pinverificationState extends State<pinverification> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 80),
+                  const SizedBox(height: 80),
+                  Text('PIN Verification', style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 4),
                   Text(
-                    'PIN Verification',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    "A 6 digit verification has been sent to your email",
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey),
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    "A 6 digit verification has send to your email",
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleSmall?.copyWith(color: Colors.grey),
-                  ),
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
                   PinCodeTextField(
                     length: 6,
                     obscureText: false,
@@ -59,51 +67,47 @@ class _pinverificationState extends State<pinverification> {
                       fieldWidth: 50,
                       activeFillColor: Colors.white,
                     ),
-                    animationDuration: Duration(milliseconds: 300),
+                    animationDuration: const Duration(milliseconds: 300),
                     backgroundColor: Colors.transparent,
                     controller: _otpTEcontroller,
                     appContext: context,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   GetBuilder<PinVerificationController>(
-                    builder: (_) {
-                      return _controller.inProgress
-                          ? const CircularProgressIndicator()
+                    builder: (controller) {
+                      return controller.inProgress
+                          ? const Center(child: CircularProgressIndicator())
                           : ElevatedButton(
-                            onPressed: _onTapsubmitbutton,
-                            child: const Text('Verify'),
-                          );
+                        onPressed: () => _onTapSubmitButton(context),
+                        child: const Icon(Icons.arrow_circle_right_outlined),
+                      );
                     },
                   ),
-
-                  SizedBox(height: 20),
+                   SizedBox(height: 20),
                   Center(
-                    child: Column(
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            text: "Have an account?",
-                            style: TextStyle(
+                    child: RichText(
+                      text: TextSpan(
+                        text: "Have an account?",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: " Sign In",
+                            style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.5,
-                              color: Colors.black,
+                              color: Colors.green,
                             ),
-                            children: [
-                              TextSpan(
-                                text: " Sign In",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.5,
-                                  color: Colors.green,
-                                ),
-                                recognizer:
-                                    TapGestureRecognizer()
-                                      ..onTap = _onTapSignInButton,
-                              ),
-                            ],
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Get.offAllNamed(SigninScreen.routeName);
+                              },
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -115,57 +119,22 @@ class _pinverificationState extends State<pinverification> {
     );
   }
 
-  void _onTapSignInButton() {
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      SigninScreen.routeName,
-      (predicate) => false,
-    );
-  }
-
-  void _onTapsubmitbutton() {
-    final args = ModalRoute.of(context)?.settings.arguments;
-    String email = '';
-    if (args is Map<String, dynamic>) {
-      email = args['email'] ?? '';
-    } else if (args is String) {
-      email = args;
-    }
-
+  void _onTapSubmitButton(BuildContext context) async {
     String pin = _otpTEcontroller.text.trim();
 
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Email not found')));
+    if (email.isEmpty || pin.length != 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid email or PIN')),
+      );
       return;
     }
 
-    _pinVerification(email, pin);
-  }
-
-  Future<void> _pinVerification(String email, String pin) async {
-    final result = await _controller.verifyPin(email, pin);
-
-    if (result) {
-      if (mounted) {
-        Navigator.pushNamed(
-          context,
-          '/password_set',
-          arguments: {'email': email, 'pin': pin},
-        );
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('PIN verified successfully!')));
-      }
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_controller.errorMessage ?? 'Verification failed'),
-          ),
-        );
-      }
+    bool verified = await _controller.verifyPin(email, pin);
+    if (verified) {
+      Get.toNamed(passwordset.routeName, arguments: {'email': email, 'pin': pin});
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('PIN verified successfully!')),
+      );
     }
   }
 

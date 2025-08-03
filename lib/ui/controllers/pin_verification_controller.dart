@@ -3,27 +3,22 @@ import '../../data/Urls.dart';
 import '../../data/service/network_caller.dart';
 
 class PinVerificationController extends GetxController {
-  bool _inProgress = false;
-  bool get inProgress => _inProgress;
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
+  bool inProgress = false;
 
   Future<bool> verifyPin(String email, String pin) async {
-    _inProgress = true;
-    update();
+    inProgress = true;
+    update(); // Notify UI
 
     final url = Url.verifyPinUrl(email, pin);
     final response = await Networkcaller.getRequest(url: url);
 
-    _inProgress = false;
-    update();
+    inProgress = false;
+    update(); // Notify UI
 
     if (response.isSuccess) {
-      _errorMessage = null;
       return true;
     } else {
-      _errorMessage = response.message ?? 'Verification failed';
+      Get.snackbar('Verification Failed', response.message ?? 'Something went wrong');
       return false;
     }
   }
