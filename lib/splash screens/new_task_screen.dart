@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/data/service/network_caller.dart';
-import 'package:task_manager/widget/appbar.dart';
-import 'package:task_manager/widget/screen_background.dart';
-
-import '../data/Urls.dart';
+import 'package:get/get.dart';
+import '../ui/controllers/new_task_screen _controller.dart';
+import '../widget/appbar.dart';
 import '../widget/progress_indicator.dart';
+import '../widget/screen_background.dart';
 import '../widget/snackbar_message.dart';
 
-class newtaskscreen extends StatefulWidget {
-  const newtaskscreen({super.key});
-  static const routeName = '/newtaskscreen';
+class newtaskscreen extends StatelessWidget {
+  newtaskscreen({super.key});
+  static const String routeName = '/newtaskscreen';
 
-  @override
-  State<newtaskscreen> createState() => _newtaskscreenState();
-}
-
-class _newtaskscreenState extends State<newtaskscreen> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _addNewTaskInprogress = false;
-
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final NewTaskController _controller = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,10 +29,7 @@ class _newtaskscreenState extends State<newtaskscreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 45),
-                  Text(
-                      'New Task',
-                      style: Theme.of(context).textTheme.titleLarge
-                  ),
+                  Text('New Task', style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _titleController,
@@ -49,12 +39,8 @@ class _newtaskscreenState extends State<newtaskscreen> {
                       filled: true,
                       hintText: 'Title',
                     ),
-                    validator: (String? value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter your title';
-                      }
-                      return null;
-                    },
+                    validator: (String? value) =>
+                    (value?.isEmpty ?? true) ? 'Please enter your title' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -66,22 +52,18 @@ class _newtaskscreenState extends State<newtaskscreen> {
                       hintText: 'Description',
                     ),
                     maxLines: 5,
-                    validator: (String? value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter your description';
-                      }
-                      return null;
-                    },
+                    validator: (String? value) =>
+                    (value?.isEmpty ?? true) ? 'Please enter your description' : null,
                   ),
                   const SizedBox(height: 16),
-                  Visibility(
-                    visible: !_addNewTaskInprogress,
-                    replacement: const progress_indicator(),
-                    child: ElevatedButton(
-                      onPressed: _ontapsubmitbutton,
+                  Obx(() {
+                    return _controller.isLoading.value
+                        ? const progress_indicator()
+                        : ElevatedButton(
+                      onPressed: () => _submit(context),
                       child: const Icon(Icons.arrow_circle_right_outlined),
-                    ),
-                  ),
+                    );
+                  }),
                 ],
               ),
             ),
@@ -90,53 +72,21 @@ class _newtaskscreenState extends State<newtaskscreen> {
       ),
     );
   }
-
-  void _ontapsubmitbutton() {
-    if (_formKey.currentState!.validate()) {
-      _addNewTask();
-    }
-  }
-
-  Future<void> _addNewTask() async {
-    setState(() => _addNewTaskInprogress = true);
-
-    try {
-      final response = await Networkcaller.postRequest(
-        url: Url.taskUrl,
-        body: {
-          'title': _titleController.text.trim(),
-          'description': _descriptionController.text.trim(),
-          'status': 'New',
-        },
+  void _submit(BuildContext context) async {
+    if (_formKey.currentState?.validate() ?? false) {
+      final success = await _controller.createNewTask(
+        _titleController.text.trim(),
+        _descriptionController.text.trim(),
       );
 
-      if (response.isSuccess) {
+      if (success) {
         _titleController.clear();
         _descriptionController.clear();
-        if (mounted) {
-          snackbar_message(context, 'Task added successfully');
-          Navigator.pop(context, true); // Return success
-        }
+        snackbar_message(context, 'Task added successfully');
+        Navigator.pop(context, true);
       } else {
-        if (mounted) {
-          snackbar_message(context, response.message ?? 'Failed to add task');
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        snackbar_message(context, 'An error occurred: $e');
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _addNewTaskInprogress = false);
+        snackbar_message(context, 'Failed to add task');
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
   }
 }
