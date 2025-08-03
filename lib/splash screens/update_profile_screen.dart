@@ -1,16 +1,12 @@
-import 'dart:convert';
 import 'dart:typed_data'; // For Uint8List
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:task_manager/ui/controllers/auth_controller.dart';
 import 'package:task_manager/widget/screen_background.dart';
 import 'package:task_manager/widget/snackbar_message.dart';
-
-import '../data/Urls.dart';
-import '../data/models/user_model.dart';
-import '../data/service/network_caller.dart';
 import '../widget/appbar.dart';
-
+import 'package:get/get.dart';
+import '../ui/controllers/update_profile_controller.dart';
 class update_profile_screen extends StatefulWidget {
   const update_profile_screen({super.key});
   static const String routeName = '/update';
@@ -28,7 +24,7 @@ class _update_profile_screenState extends State<update_profile_screen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final ImagePicker _imagePicker = ImagePicker();
   XFile? _selectedImage;
-  bool updateImageInProgress = false;
+  final _controller = Get.find<ProfileUpdateController>();
   @override
   void initState() {
     super.initState();
@@ -158,14 +154,19 @@ class _update_profile_screenState extends State<update_profile_screen> {
                     },
                   ),
                   SizedBox(height: 16),
-                  Visibility(
-                    visible: updateImageInProgress == false,
-                    replacement: Center(child: CircularProgressIndicator()),
-                    child: ElevatedButton(
-                      onPressed: _onTapSignupButton,
-                      child: Icon(Icons.arrow_circle_right_outlined),
-                    ),
+                  GetBuilder<ProfileUpdateController>(
+                    builder: (controller) {
+                      return Visibility(
+                        visible: controller.inProgress == false,
+                        replacement: Center(child: CircularProgressIndicator()),
+                        child: ElevatedButton(
+                          onPressed: _onTapSignupButton,
+                          child: Icon(Icons.arrow_circle_right_outlined),
+                        ),
+                      );
+                    },
                   ),
+
                   SizedBox(height: 20),
                 ],
               ),
@@ -208,64 +209,34 @@ class _update_profile_screenState extends State<update_profile_screen> {
     }
   }
 
-  void _onTapSignupButton() {
+  void _onTapSignupButton() async {
     if (_formKey.currentState!.validate()) {
-      _updateImage();
-    }
-  }
+      Uint8List? imageBytes;
+      if (_selectedImage != null) {
+        imageBytes = await _selectedImage!.readAsBytes();
+      }
 
-  Future<void> _updateImage() async {
-    updateImageInProgress = true;
-
-    if (mounted) {
-      setState(() {});
-    }
-     Uint8List? imageBytes;
-    Map<String, String> requestbody = {
-      "email": _emailController.text,
-      "firstName": _nameController.text.trim(),
-      "lastName": _lastnameController.text.trim(),
-      "mobile": _mobileController.text,
-    };
-    if (_passwordController.text.isNotEmpty) {
-      requestbody['password'] = _passwordController.text;
-    }
-    if (_selectedImage != null) {
-       imageBytes = await _selectedImage!.readAsBytes();
-      requestbody['photo'] = base64Encode(imageBytes);
-    }
-    NetworkResponse response = await Networkcaller.postRequest(
-      url: Url.updateProfileUrl,
-      body: requestbody,
-    );
-    if (response.isSuccess) {
-      user userModels = user(
-        id: authcontroller.userModel!.id,
-        email: _emailController.text.trim(),
+      final success = await _controller.updateProfile(
+        email: _emailController.text,
         firstName: _nameController.text.trim(),
         lastName: _lastnameController.text.trim(),
         mobile: _mobileController.text.trim(),
-        photo: imageBytes == null ? authcontroller.userModel!.photo : base64Encode(imageBytes),
-
+        password: _passwordController.text,
+        imageBytes: imageBytes,
       );
-      await authcontroller.UpdateUserData(userModels,);
-      _passwordController.clear();
-      updateImageInProgress = false;
-      if (mounted) {
-        setState(() {});
-        snackbar_message(context, 'Profile updated successfully!');
-        Navigator.pop(context);
-      }
-    } else {
-      updateImageInProgress = false;
-      if (mounted) {
-        snackbar_message(context, 'Successfully Updated');
+
+      if (success) {
+        _passwordController.clear();
+        if (mounted) {
+          setState(() {});
+          snackbar_message(context, 'Profile updated successfully!');
+          Navigator.pop(context);
+        }
       } else {
-        snackbar_message(context, response.message!);
+        snackbar_message(context, _controller.errorMessage ?? 'Update failed');
       }
     }
   }
-
   @override
   void dispose() {
     _emailController.dispose();
