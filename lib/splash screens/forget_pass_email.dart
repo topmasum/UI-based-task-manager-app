@@ -1,26 +1,18 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager/widget/screen_background.dart';
-import 'package:task_manager/widget/snackbar_message.dart';
 import 'package:get/get.dart';
-import '../ui/controllers/recoveryEmail_controller.dart';
-import 'forget_pass_pin.dart';
 
-class forgetpass extends StatefulWidget {
-  const forgetpass({super.key});
+import '../ui/controllers/forgetpass_email_controller.dart';
+import '../widget/screen_background.dart';
+import 'forget_pass_pin.dart';
+class forgetpass extends StatelessWidget {
+  forgetpass({super.key});
   static const String routeName = '/forget_pass';
 
-  @override
-  State<forgetpass> createState() => _forgetpassState();
-}
-
-class _forgetpassState extends State<forgetpass> {
-  final TextEditingController _emailController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _emailInprogress = false;
-  final ForgetPassController _controller = Get.put(ForgetPassController());
-
+  final _emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final ForgetPassEmailController _controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -35,75 +27,66 @@ class _forgetpassState extends State<forgetpass> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 80),
+                  const SizedBox(height: 80),
+                  Text('Your Email Address', style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 4),
                   Text(
-                    'Your Email Address',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    "Enter Your Email",
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey),
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    "Enter a 6 digit pin",
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleSmall?.copyWith(color: Colors.grey),
-                  ),
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
                   TextFormField(
                     controller: _emailController,
                     textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       fillColor: Colors.white,
                       filled: true,
                       hintText: 'Email',
                     ),
-                    validator: (String? value) {
-                      String email = value ?? '';
-                      if (EmailValidator.validate(email) == false) {
+                    validator: (value) {
+                      if (!EmailValidator.validate(value ?? '')) {
                         return 'Please enter your email';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(height: 16),
-                  GetBuilder<ForgetPassController>(
-                    builder: (_) {
-                      return _controller.inProgress
-                          ? CircularProgressIndicator()
+                  const SizedBox(height: 16),
+                  GetBuilder<ForgetPassEmailController>(
+                    builder: (controller) {
+                      return controller.inProgress
+                          ? const Center(child: CircularProgressIndicator())
                           : ElevatedButton(
-                        onPressed: _onTapsubmitbutton,
-                        child: Icon(Icons.arrow_circle_right_outlined),
+                        onPressed: () => _onTapSubmitButton(context),
+                        child: const Icon(Icons.arrow_circle_right_outlined),
                       );
                     },
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Center(
-                    child: Column(
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            text: "Have an account?",
-                            style: TextStyle(
+                    child: RichText(
+                      text: TextSpan(
+                        text: "Have an account?",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: " Sign In",
+                            style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.5,
-                              color: Colors.black,
+                              color: Colors.green,
                             ),
-                            children: [
-                              TextSpan(
-                                text: " Sign In",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.5,
-                                  color: Colors.green,
-                                ),
-                                recognizer:
-                                    TapGestureRecognizer()
-                                      ..onTap = _onTapSignInButton,
-                              ),
-                            ],
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.pop(context);
+                              },
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -115,34 +98,15 @@ class _forgetpassState extends State<forgetpass> {
     );
   }
 
-  void _onTapSignInButton() {
-    Navigator.pop(context);
-  }
-
-  Future<void> _onTapsubmitbutton() async {
-    if (_formKey.currentState!.validate()) {
-      await _recoveryemail();
+  void _onTapSubmitButton(BuildContext context) async {
+    if (_formKey.currentState?.validate() ?? false) {
+      bool success = await _controller.sendRecoveryEmail(_emailController.text.trim());
+      if (success) {
+        Get.toNamed(
+          pinverification.routeName,
+          arguments: {'email': _emailController.text.trim()},
+        );
+      }
     }
-  }
-
-  Future<void> _recoveryemail() async {
-    final email = _emailController.text.trim();
-    final bool result = await _controller.sendRecoveryEmail(email);
-
-    if (result) {
-      Get.toNamed(
-        pinverification.routeName,
-        arguments: {'email': email},
-      );
-    } else {
-      if (mounted) snackbar_message(context, _controller.errorMessage ?? 'Failed');
-    }
-  }
-
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    super.dispose();
   }
 }

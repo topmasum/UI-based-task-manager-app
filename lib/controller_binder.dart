@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:task_manager/ui/controllers/Signin_controller.dart';
 import 'package:task_manager/ui/controllers/canceled_tasklist_controller.dart';
 import 'package:task_manager/ui/controllers/completed_task_controller.dart';
+import 'package:task_manager/ui/controllers/forgetpass_email_controller.dart';
 import 'package:task_manager/ui/controllers/new_task_screen%20_controller.dart';
 import 'package:task_manager/ui/controllers/new_tasklist_controller.dart';
 import 'package:task_manager/ui/controllers/progressTaskList_controller.dart';
@@ -21,6 +22,8 @@ class ControllerBinder extends Bindings{
     Get.put(ProfileUpdateController());
     Get.put(ProgressTaskController());
     Get.put(NewTaskController());
+    Get.put(ForgetPassEmailController());
+
 
 
 
