@@ -180,8 +180,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void _onTapSignInButton() {
-
-    Navigator.pop(context);
+    Get.back();
   }
   void _onTapSignupButton() async {
     if (_formKey.currentState!.validate()) {
